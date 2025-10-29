@@ -1,0 +1,36 @@
+import json
+import glob
+
+def get_paras_by_number(para_number: int, input_folder="./json_inputs/*.json"):
+    """
+    Extract paragraphs with a given para_number across multiple JSON files.
+
+    Args:
+        para_number (int): The paragraph number to search for.
+        input_folder (str): Glob pattern for JSON files.
+
+    Returns:
+        dict: { "para_number": int, "results": [ { "file": str, "para": str } ] }
+    """
+    results = []
+
+    for file in glob.glob(input_folder):
+        with open(file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            for p in data[0]["para"]:
+                if p["para_number"] == para_number:
+                    results.append({
+                        "file": file,
+                        "para": p["para"].strip()
+                    })
+
+    return {
+        "para_number": para_number,
+        "results": results
+    }
+
+
+# 🔹 Example usage:
+if __name__ == "__main__":
+    output = get_paras_by_number(10, "./data/*.json")
+    print(json.dumps(output, indent=2, ensure_ascii=False))
